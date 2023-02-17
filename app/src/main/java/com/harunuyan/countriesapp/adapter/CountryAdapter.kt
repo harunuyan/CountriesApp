@@ -2,9 +2,11 @@ package com.harunuyan.countriesapp.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.harunuyan.countriesapp.databinding.ItemCountryBinding
 import com.harunuyan.countriesapp.model.Country
+import com.harunuyan.countriesapp.view.FeedFragmentDirections
 
 class CountryAdapter(private val countryList: ArrayList<Country>) :
     RecyclerView.Adapter<CountryAdapter.CountryViewHolder>() {
@@ -29,6 +31,12 @@ class CountryAdapter(private val countryList: ArrayList<Country>) :
     //
     override fun onBindViewHolder(holder: CountryViewHolder, position: Int) {
         holder.bind(position)
+        // Bir view(item)'a tıklandığında ne olacağı. fragment_country.xml e gideceğiz.
+        holder.binding.root.setOnClickListener {
+            val action = FeedFragmentDirections.actionFeedFragmentToCountryFragment()
+            Navigation.findNavController(it).navigate(action)
+        }
+
     }
 
     override fun getItemCount(): Int {

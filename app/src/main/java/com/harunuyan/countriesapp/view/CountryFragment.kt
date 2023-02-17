@@ -4,23 +4,52 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.harunuyan.countriesapp.R
+import com.harunuyan.countriesapp.databinding.FragmentCountryBinding
+import com.harunuyan.countriesapp.viewmodel.CountryViewModel
 
 class CountryFragment : Fragment() {
+    lateinit var binding: FragmentCountryBinding
+    private lateinit var viewModel: CountryViewModel
     private var countryUuid = 0
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_country, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_country, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProviders.of(this)[CountryViewModel::class.java]
+        viewModel.getDataFromRoom()
+
+
+
         arguments?.let {
             countryUuid = CountryFragmentArgs.fromBundle(it).countryUuid
         }
+
+        observeLiveData()
+    }
+
+    private fun observeLiveData() {
+        viewModel.countryLiveData.observe(viewLifecycleOwner, Observer { country ->
+            country?.let {
+                binding.apply {
+                    countryName.text = country.countryName
+                    countryCapital.text = country.countryCapital
+                    countryCurrency.text = country.countryCurrency
+                    countryLanguage.text = country.countryLanguage
+                    countryRegion.text = country.countryRegion
+                }
+            }
+        })
     }
 }
