@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import com.harunuyan.countriesapp.R
 
 class CountryFragment : Fragment() {
-
+    private var countryUuid = 0
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -17,4 +17,10 @@ class CountryFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_country, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        arguments?.let {
+            countryUuid = CountryFragmentArgs.fromBundle(it).countryUuid
+        }
+    }
 }
