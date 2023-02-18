@@ -16,16 +16,6 @@ class FeedViewModel : ViewModel() {
 
 
     fun refreshData() {
-        val country = Country("Turkey", "Europe", "Ankara", "TRY", "Turkish", ".com")
-        val country2 = Country("france", "Europe", "Paris", "Euro", "French", ".com")
-        val country3 = Country("Deutchland", "Europe", "Ankara", "TRY", "Turkish", ".com")
-        val country4 = Country("Turkey", "Europe", "Ankara", "TRY", "Turkish", ".com")
-        val country5 = Country("Turkey", "Europe", "Ankara", "TRY", "Turkish", ".com")
 
-        val countryList = arrayListOf<Country>(country, country2, country3, country4, country5)
-
-        countries.value = countryList
-        countryError.value = false
-        countryLoading.value = false
     }
 }

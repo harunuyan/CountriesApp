@@ -10,8 +10,6 @@ class CountryViewModel: ViewModel() {
 
     // Room kullanıp verileri local olarak kaydedeceğiz.
     fun getDataFromRoom() {
-        val country = Country("Turkey","Asia","Ankara", "TRY", "Turkish","com")
 
-        countryLiveData.value = country
     }
 }
