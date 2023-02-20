@@ -41,6 +41,19 @@ class FeedFragment : Fragment() {
         binding.countryList.adapter = countryAdapter
 
         // Fonksiyonumuzun çalışması için onViewCreated altında çağırdık.
+
+        // Swipe'ı elden geçirip observeLiveData'yı sonra çağıracağız.
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            binding.apply {
+                countryList.visibility = View.GONE
+                countryError.visibility = View.GONE
+                countryLoading.visibility = View.VISIBLE
+            }
+            viewModel.refreshData()
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
+
         observeLiveData()
 
 
