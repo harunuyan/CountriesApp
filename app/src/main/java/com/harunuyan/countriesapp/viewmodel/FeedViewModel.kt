@@ -1,15 +1,18 @@
 package com.harunuyan.countriesapp.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.harunuyan.countriesapp.model.Country
 import com.harunuyan.countriesapp.service.CountryAPIService
+import com.harunuyan.countriesapp.service.CountryDatabase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.launch
 
-class FeedViewModel : ViewModel() {
+// ViewModel'i kaldırıp kendi oluşturduğumuz AndroidViewModel'dan extend alan BaseViewModel'ı veriyoruz.
+class FeedViewModel(application: Application) : /* ViewModel() */ BaseViewModel(application) {
     // Ülkeleri alacağımız liste. Değiştirilebilir olması için MutableLiveData kullanacağız ve liste olacağını belirteceğiz.
     val countries = MutableLiveData<List<Country>>()
 
@@ -48,9 +51,8 @@ class FeedViewModel : ViewModel() {
 
                     // Başarılı olursa :
                     override fun onSuccess(t: List<Country>) {
-                        countries.value = t
-                        countryLoading.value = false
-                        countryError.value = false
+                        storeInSQLite(t)
+
                     }
 
                     // Hata olursa :
@@ -62,6 +64,40 @@ class FeedViewModel : ViewModel() {
 
                 }
                 ))
+
+    }
+
+    // onSuccess içerisinde yapacağımız işlemleri burada yapacağız.
+    // bu fonksiyonu storeInSqLite() içerisine koyacağız.
+    private fun showCountries(countryList: List<Country>) {
+        countries.value = countryList
+        countryLoading.value = false
+        countryError.value = false
+    }
+
+    // verileri sqlite'a kaydedeceğiz
+    // Database'de suspend fun kullandığımızdan işlemleri coroutine ile yapacağız.
+    private fun storeInSQLite(list: List<Country>) {
+        // Database ile ilgili işlemleri yaparız.
+        launch {
+            // Dao'yu değişken olarak oluşturup suspend fonksiyonlara erişebiliriz
+            val dao = CountryDatabase(getApplication()).countryDao()
+            // Önce içerisinde ne varsa siliyoruz.
+            dao.deleteAllCountries()
+            // İçerisine ekleme yaptık.
+            // Listeyi tekil eleman haline getirir. list -> individual
+            val listLong = dao.insertAll(*list.toTypedArray())
+
+            // Bize döndürülen uuid'leri listemiz içerisindeki elemanlara atıyoruz.
+            var i = 0
+            while (i < list.size) {
+                list[i].uuid = listLong[i].toInt()
+                i += 1
+            }
+            // Son olarak ülkeleri gösteriyoruz. ve atamaları yapıyoruz.
+            showCountries(list)
+        }
+
 
     }
 }
