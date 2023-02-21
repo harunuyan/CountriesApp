@@ -17,7 +17,7 @@ class CountryAdapter(private val countryList: ArrayList<Country>) :
     inner class CountryViewHolder(var binding: ItemCountryBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(position: Int) {
-            binding.apply {
+            with(binding) {
                 countryNameItem.text = countryList[position].countryName
                 countryRegionItem.text = countryList[position].countryRegion
             }
@@ -35,7 +35,7 @@ class CountryAdapter(private val countryList: ArrayList<Country>) :
         holder.bind(position)
         // Bir view(item)'a tıklandığında ne olacağı. fragment_country.xml e gideceğiz.
         holder.binding.root.setOnClickListener {
-            val action = FeedFragmentDirections.actionFeedFragmentToCountryFragment()
+            val action = FeedFragmentDirections.actionFeedFragmentToCountryFragment(countryList[position].uuid)
             Navigation.findNavController(it).navigate(action)
         }
         countryList[position].imageUrl?.let {

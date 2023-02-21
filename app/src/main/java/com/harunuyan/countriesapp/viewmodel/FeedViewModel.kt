@@ -1,10 +1,13 @@
 package com.harunuyan.countriesapp.viewmodel
 
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.harunuyan.countriesapp.model.Country
 import com.harunuyan.countriesapp.service.CountryAPIService
 import com.harunuyan.countriesapp.service.CountryDatabase
+import com.harunuyan.util.CustomSharedPreferences
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
@@ -25,6 +28,12 @@ class FeedViewModel(application: Application) : /* ViewModel() */ BaseViewModel(
     // ApiService nesnemizi oluşturacağız.
     private val countryAPIService = CountryAPIService()
 
+    // Shared Preference
+    private var customPreferences = CustomSharedPreferences(getApplication())
+
+    // NanoSaniye cinsinden 10 dk'yı verecek
+    private var refreshTime = 10 * 60 * 1000 * 1000 * 1000L
+
     /* Disposable oluşturacağız. Disposable: İnternetten veri indirirken her call hafızada bir yer
     kaplar ve fragmentlar kapandığında bu call'lardan kurtulmamızı sağlar. İndirdiğimiz verileri
     disposable içerisine atarız. Hafızamızı verimli kullanmamız için bu yapıyı kullanmamız gerekir */
@@ -32,7 +41,34 @@ class FeedViewModel(application: Application) : /* ViewModel() */ BaseViewModel(
 
 
     fun refreshData() {
+        viewModelScope.launch {
+
+        }
+        // Ne zaman kaydedildiğini bu fun ile bileceğiz
+        val updateTime = customPreferences.getTime()
+        /* Şu an güncel olan zaman ile bir önceki kaydettiğimiz zamanı çıkardığımızda 10dk dan küçük bir
+        değer geliyorsa local database'den alacak. Eğer 10dk dan uzunsa internetten(API) çekecek
+         */
+        if (updateTime != null && updateTime != 0L && System.nanoTime() - updateTime < refreshTime) {
+            getDataFromSQLite()
+        } else {
+            getDataFromAPI()
+        }
+
+    }
+
+    //Sayfayı aşağı kaydırarak yenilediğimizde 10 dk geçmemiş olsa bile SQLite yerine API'dan almasını isteyeceğiz
+    fun refreshFromAPI() {
         getDataFromAPI()
+    }
+
+    private fun getDataFromSQLite() {
+        countryLoading.value = true
+        launch {
+            val countries = CountryDatabase(getApplication()).countryDao().getAllCountries()
+            showCountries(countries)
+            Toast.makeText(getApplication(), "Countries From SQLite", Toast.LENGTH_LONG).show()
+        }
     }
     // Ayrı fun oluşturacağız çünkü internetten ve sqLite'dan ayrı veriler çekeceğiz.
 
@@ -52,7 +88,8 @@ class FeedViewModel(application: Application) : /* ViewModel() */ BaseViewModel(
                     // Başarılı olursa :
                     override fun onSuccess(t: List<Country>) {
                         storeInSQLite(t)
-
+                        Toast.makeText(getApplication(), "Countries From API", Toast.LENGTH_LONG)
+                            .show()
                     }
 
                     // Hata olursa :
@@ -97,7 +134,13 @@ class FeedViewModel(application: Application) : /* ViewModel() */ BaseViewModel(
             // Son olarak ülkeleri gösteriyoruz. ve atamaları yapıyoruz.
             showCountries(list)
         }
+        // Shared preference. NanoTime: Alabileceğimiz en detaylı zaman tipini Long olarak verir.
+        customPreferences.saveTime(System.nanoTime())
+    }
 
-
+    override fun onCleared() {
+        super.onCleared()
+        // Hafızayı verimli hale getirmek için disposable'ı temizledik.
+        disposable.clear()
     }
 }

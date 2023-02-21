@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModelProviders
 import com.harunuyan.countriesapp.R
 import com.harunuyan.countriesapp.databinding.FragmentCountryBinding
 import com.harunuyan.countriesapp.viewmodel.CountryViewModel
+import com.harunuyan.util.downloadFromUrl
+import com.harunuyan.util.placeHolderProgressBar
 
 class CountryFragment : Fragment() {
     lateinit var binding: FragmentCountryBinding
@@ -27,14 +29,17 @@ class CountryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProviders.of(this)[CountryViewModel::class.java]
-        viewModel.getDataFromRoom()
-
-
 
         arguments?.let {
             countryUuid = CountryFragmentArgs.fromBundle(it).countryUuid
         }
+
+        viewModel = ViewModelProviders.of(this)[CountryViewModel::class.java]
+        viewModel.getDataFromRoom(countryUuid)
+
+
+
+
 
         observeLiveData()
     }
@@ -42,12 +47,18 @@ class CountryFragment : Fragment() {
     private fun observeLiveData() {
         viewModel.countryLiveData.observe(viewLifecycleOwner, Observer { country ->
             country?.let {
-                binding.apply {
+                with(binding) {
                     countryName.text = country.countryName
                     countryCapital.text = country.countryCapital
                     countryCurrency.text = country.countryCurrency
                     countryLanguage.text = country.countryLanguage
                     countryRegion.text = country.countryRegion
+                    // Extension fun.
+                    countryFlag.downloadFromUrl(
+                        // return to label, jump
+                        country.imageUrl ?: return@let,
+                        placeHolderProgressBar(context ?: return@let)
+                    )
                 }
             }
         })

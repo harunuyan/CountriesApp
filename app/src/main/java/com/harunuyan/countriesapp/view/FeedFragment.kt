@@ -50,7 +50,10 @@ class FeedFragment : Fragment() {
                 countryError.visibility = View.GONE
                 countryLoading.visibility = View.VISIBLE
             }
-            viewModel.refreshData()
+            // Local database yerine API'den verileri alacağız.
+            viewModel.refreshFromAPI()
+
+            // Kendi eklediğimiz progress bar gözüksün diye
             binding.swipeRefreshLayout.isRefreshing = false
         }
 
