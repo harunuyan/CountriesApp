@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -15,7 +14,8 @@ import com.harunuyan.countriesapp.databinding.FragmentFeedBinding
 import com.harunuyan.countriesapp.viewmodel.FeedViewModel
 
 class FeedFragment : Fragment() {
-    lateinit var binding: FragmentFeedBinding
+    private var _binding: FragmentFeedBinding? = null
+    private val binding get() = _binding!!
     private lateinit var viewModel: FeedViewModel
     private var countryAdapter = CountryAdapter(arrayListOf())
 
@@ -24,7 +24,7 @@ class FeedFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_feed, container, false)
+        _binding = FragmentFeedBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -108,6 +108,11 @@ class FeedFragment : Fragment() {
                 }
             }
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }

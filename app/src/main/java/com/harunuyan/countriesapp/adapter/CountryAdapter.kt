@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.harunuyan.countriesapp.databinding.ItemCountryBinding
 import com.harunuyan.countriesapp.model.Country
 import com.harunuyan.countriesapp.view.FeedFragmentDirections
-import com.harunuyan.util.downloadFromUrl
-import com.harunuyan.util.placeHolderProgressBar
+import com.harunuyan.countriesapp.util.downloadFromUrl
+import com.harunuyan.countriesapp.util.placeHolderProgressBar
 
 class CountryAdapter(private val countryList: ArrayList<Country>) :
     RecyclerView.Adapter<CountryAdapter.CountryViewHolder>() {

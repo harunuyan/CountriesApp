@@ -41,8 +41,8 @@ android {
             classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
         }
     }
-    dataBinding {
-        enabled true
+    buildFeatures {
+        viewBinding true
     }
 }
 

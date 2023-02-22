@@ -4,18 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.harunuyan.countriesapp.R
 import com.harunuyan.countriesapp.databinding.FragmentCountryBinding
 import com.harunuyan.countriesapp.viewmodel.CountryViewModel
-import com.harunuyan.util.downloadFromUrl
-import com.harunuyan.util.placeHolderProgressBar
+import com.harunuyan.countriesapp.util.downloadFromUrl
+import com.harunuyan.countriesapp.util.placeHolderProgressBar
 
 class CountryFragment : Fragment() {
-    lateinit var binding: FragmentCountryBinding
+    private var _binding: FragmentCountryBinding? = null
+    private val binding get() = _binding!!
     private lateinit var viewModel: CountryViewModel
     private var countryUuid = 0
     override fun onCreateView(
@@ -23,7 +23,7 @@ class CountryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_country, container, false)
+        _binding = FragmentCountryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -36,10 +36,6 @@ class CountryFragment : Fragment() {
 
         viewModel = ViewModelProviders.of(this)[CountryViewModel::class.java]
         viewModel.getDataFromRoom(countryUuid)
-
-
-
-
 
         observeLiveData()
     }
@@ -62,5 +58,10 @@ class CountryFragment : Fragment() {
                 }
             }
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

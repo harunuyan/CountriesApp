@@ -1,4 +1,4 @@
-package com.harunuyan.util
+package com.harunuyan.countriesapp.util
 
 import android.content.Context
 import android.widget.ImageView

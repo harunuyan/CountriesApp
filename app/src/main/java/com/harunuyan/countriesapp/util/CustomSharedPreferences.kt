@@ -1,4 +1,4 @@
-package com.harunuyan.util
+package com.harunuyan.countriesapp.util
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -20,7 +20,8 @@ class CustomSharedPreferences {
 
         // obje var mı yok mu kontrol edilip varsa instance verilecek.
         operator fun invoke(context: Context): CustomSharedPreferences = instance ?: synchronized(
-            lock) {
+            lock
+        ) {
             // yoksa senkronize bir şekilde shared preference oluşturma işlemi yapılacak.
             instance ?: makeCustomSharedPreferences(context).also {
                 instance = it

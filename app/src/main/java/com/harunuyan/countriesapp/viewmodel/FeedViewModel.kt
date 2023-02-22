@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.harunuyan.countriesapp.model.Country
 import com.harunuyan.countriesapp.service.CountryAPIService
 import com.harunuyan.countriesapp.service.CountryDatabase
-import com.harunuyan.util.CustomSharedPreferences
+import com.harunuyan.countriesapp.util.CustomSharedPreferences
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
@@ -67,7 +67,7 @@ class FeedViewModel(application: Application) : /* ViewModel() */ BaseViewModel(
         launch {
             val countries = CountryDatabase(getApplication()).countryDao().getAllCountries()
             showCountries(countries)
-            Toast.makeText(getApplication(), "Countries From SQLite", Toast.LENGTH_LONG).show()
+            Toast.makeText(getApplication(), "Countries From SQLite", Toast.LENGTH_SHORT).show()
         }
     }
     // Ayrı fun oluşturacağız çünkü internetten ve sqLite'dan ayrı veriler çekeceğiz.
@@ -88,7 +88,7 @@ class FeedViewModel(application: Application) : /* ViewModel() */ BaseViewModel(
                     // Başarılı olursa :
                     override fun onSuccess(t: List<Country>) {
                         storeInSQLite(t)
-                        Toast.makeText(getApplication(), "Countries From API", Toast.LENGTH_LONG)
+                        Toast.makeText(getApplication(), "Countries From API", Toast.LENGTH_SHORT)
                             .show()
                     }
 
